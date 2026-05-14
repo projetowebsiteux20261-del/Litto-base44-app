@@ -1,177 +1,171 @@
-import { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/lib/AuthContext";
- 
+import { motion } from "framer-motion";
+import AuthInput from "../components/auth/AuthInput";
+import MaterialIcon from "../components/ui/MaterialIcon";
+
 export default function Cadastro() {
   const navigate = useNavigate();
-  const { cadastrar, entrarComGoogle } = useAuth();
- 
   const [form, setForm] = useState({ nome: "", email: "", senha: "", confirmarSenha: "" });
-  const [erro, setErro] = useState("");
-  const [carregando, setCarregando] = useState(false);
- 
-  function handleChange(e) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErro("");
+    setError("");
+  };
+  
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  if (!form.nome || !form.email || !form.senha || !form.confirmarSenha) {
+    setError("Preencha todos os campos.");
+    return;
   }
- 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (form.senha !== form.confirmarSenha) {
-      setErro("As senhas não coincidem.");
-      return;
-    }
-    if (form.senha.length < 6) {
-      setErro("A senha deve ter pelo menos 6 caracteres.");
-      return;
-    }
-    setCarregando(true);
-    try {
-      await cadastrar(form.email, form.senha, form.nome);
-      navigate("/");
-    } catch (err) {
-      switch (err.code) {
-        case "auth/email-already-in-use":
-          setErro("Este e-mail já está em uso.");
-          break;
-        case "auth/invalid-email":
-          setErro("E-mail inválido.");
-          break;
-        default:
-          setErro("Erro ao criar conta. Tente novamente.");
-      }
-    } finally {
-      setCarregando(false);
-    }
+
+  if (form.senha.length < 6) {
+    setError("A senha deve ter pelo menos 6 caracteres.");
+    return;
   }
- 
-  async function handleGoogle() {
-    setCarregando(true);
-    try {
-      await entrarComGoogle();
-      navigate("/");
-    } catch {
-      setErro("Erro ao entrar com Google. Tente novamente.");
-    } finally {
-      setCarregando(false);
-    }
+
+  if (form.senha !== form.confirmarSenha) {
+    setError("As senhas não coincidem.");
+    return;
   }
- 
+
+  try {
+    setLoading(true);
+
+    await createUserWithEmailAndPassword(
+      auth,
+      form.email,
+      form.senha
+    );
+
+    navigate("/");
+
+  } catch (error) {
+
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        setError("Este e-mail já está em uso.");
+        break;
+
+      case "auth/invalid-email":
+        setError("E-mail inválido.");
+        break;
+
+      case "auth/weak-password":
+        setError("Senha muito fraca.");
+        break;
+
+      default:
+        setError("Erro ao criar conta.");
+    }
+
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
-    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        {/* Logo / Título */}
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-20">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 100 }}
+        className="w-full max-w-md"
+      >
+        {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <h1 className="text-4xl font-black tracking-tighter text-white">
-              litto<span className="text-[#f5a623]">.</span>
-            </h1>
+          <Link to="/" className="inline-block mb-6">
+            <div className="bg-primary px-6 py-2 border-2 border-foreground shadow-brutal rounded-sm">
+              <span className="text-white font-poppins font-black text-2xl italic">Litto</span>
+            </div>
           </Link>
-          <p className="mt-2 text-sm text-gray-400">Crie sua conta e explore o universo literário</p>
+          <h1 className="font-poppins font-black text-3xl text-foreground">Crie sua conta</h1>
+          <p className="font-poppins text-sm text-muted-foreground mt-2">Junte-se à comunidade Litto.</p>
         </div>
- 
+
         {/* Card */}
-        <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-8 shadow-xl">
-          <h2 className="text-xl font-bold text-white mb-6">Criar conta</h2>
- 
-          {erro && (
-            <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-              {erro}
-            </div>
-          )}
- 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Nome</label>
-              <input
-                type="text"
-                name="nome"
-                value={form.nome}
-                onChange={handleChange}
-                placeholder="Seu nome"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#f5a623]/60 focus:ring-1 focus:ring-[#f5a623]/30 transition"
-              />
-            </div>
- 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">E-mail</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="seu@email.com"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#f5a623]/60 focus:ring-1 focus:ring-[#f5a623]/30 transition"
-              />
-            </div>
- 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Senha</label>
-              <input
-                type="password"
-                name="senha"
-                value={form.senha}
-                onChange={handleChange}
-                placeholder="Mínimo 6 caracteres"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#f5a623]/60 focus:ring-1 focus:ring-[#f5a623]/30 transition"
-              />
-            </div>
- 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Confirmar senha</label>
-              <input
-                type="password"
-                name="confirmarSenha"
-                value={form.confirmarSenha}
-                onChange={handleChange}
-                placeholder="Repita sua senha"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#f5a623]/60 focus:ring-1 focus:ring-[#f5a623]/30 transition"
-              />
-            </div>
- 
+        <div className="bg-card border-4 border-foreground shadow-brutal rounded-sm overflow-hidden">
+          <div className="bg-accent px-6 py-3 border-b-2 border-foreground flex items-center gap-2">
+            <MaterialIcon name="person_add" size={18} className="text-white" />
+            <span className="font-poppins font-bold text-xs uppercase text-white">Nova conta</span>
+          </div>
+
+          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <AuthInput
+              label="Nome completo"
+              name="nome"
+              type="text"
+              placeholder="Seu nome"
+              value={form.nome}
+              onChange={handleChange}
+              icon="person"
+            />
+            <AuthInput
+              label="E-mail"
+              name="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={form.email}
+              onChange={handleChange}
+              icon="mail"
+            />
+            <AuthInput
+              label="Senha"
+              name="senha"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              value={form.senha}
+              onChange={handleChange}
+              icon="lock"
+            />
+            <AuthInput
+              label="Confirmar senha"
+              name="confirmarSenha"
+              type="password"
+              placeholder="Repita a senha"
+              value={form.confirmarSenha}
+              onChange={handleChange}
+              icon="lock_check"
+            />
+
+            {error && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-destructive/10 border-2 border-destructive rounded-sm">
+                <MaterialIcon name="error" size={16} className="text-destructive" />
+                <span className="font-poppins text-xs font-medium text-destructive">{error}</span>
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={carregando}
-              className="w-full bg-[#f5a623] hover:bg-[#e09516] text-black font-bold py-3 rounded-xl text-sm transition disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              disabled={loading}
+              className="brutal-btn w-full py-3.5 bg-accent text-white font-poppins font-bold text-sm uppercase border-2 border-foreground shadow-brutal rounded-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {carregando ? "Criando conta..." : "Criar conta"}
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <MaterialIcon name="person_add" size={18} />
+                  Criar Conta
+                </>
+              )}
             </button>
           </form>
- 
-          {/* Divisor */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs text-gray-500">ou continue com</span>
-            <div className="flex-1 h-px bg-white/10" />
-          </div>
- 
-          {/* Google */}
-          <button
-            onClick={handleGoogle}
-            disabled={carregando}
-            className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3 rounded-xl text-sm transition disabled:opacity-50"
-          >
-            <svg width="18" height="18" viewBox="0 0 48 48">
-              <path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/>
-              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.5 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/>
-              <path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.6 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7l-6.6 5C9.7 39.7 16.3 44 24 44z"/>
-              <path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l6.2 5.2C40.7 35.7 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/>
-            </svg>
-            Continuar com Google
-          </button>
- 
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Já tem uma conta?{" "}
-            <Link to="/entrar" className="text-[#f5a623] hover:underline font-medium">
+
+          <div className="px-6 py-4 border-t-2 border-foreground bg-muted text-center">
+            <span className="font-poppins text-sm text-muted-foreground">Já tem conta? </span>
+            <Link to="/login" className="font-poppins text-sm font-bold text-primary underline underline-offset-2 hover:text-primary/80">
               Entrar
             </Link>
-          </p>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

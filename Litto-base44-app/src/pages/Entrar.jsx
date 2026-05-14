@@ -1,10 +1,16 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "firebase/auth";
 
 export default function Entrar() {
   const navigate = useNavigate();
-  const { entrar, entrarComGoogle } = useAuth();
 
   const [form, setForm] = useState({ email: "", senha: "" });
   const [erro, setErro] = useState("");
@@ -16,43 +22,57 @@ export default function Entrar() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setCarregando(true);
-    try {
-      await entrar(form.email, form.senha);
-      navigate("/");
-    } catch (err) {
-      switch (err.code) {
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-          setErro("E-mail ou senha incorretos.");
-          break;
-        case "auth/invalid-email":
-          setErro("E-mail inválido.");
-          break;
-        case "auth/too-many-requests":
-          setErro("Muitas tentativas. Aguarde um momento antes de tentar novamente.");
-          break;
-        default:
-          setErro("Erro ao entrar. Tente novamente.");
-      }
-    } finally {
-      setCarregando(false);
-    }
-  }
+  e.preventDefault();
 
-  async function handleGoogle() {
-    setCarregando(true);
-    try {
-      await entrarComGoogle();
-      navigate("/");
-    } catch {
-      setErro("Erro ao entrar com Google. Tente novamente.");
-    } finally {
-      setCarregando(false);
+  setCarregando(true);
+
+  try {
+
+    await signInWithEmailAndPassword(
+      auth,
+      form.email,
+      form.senha
+    );
+
+    navigate("/");
+
+  } catch (err) {
+
+    switch (err.code) {
+
+      case "auth/user-not-found":
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        setErro("E-mail ou senha incorretos.");
+        break;
+
+      case "auth/invalid-email":
+        setErro("E-mail inválido.");
+        break;
+
+      default:
+        setErro("Erro ao entrar.");
     }
+
+  } finally {
+    setCarregando(false);
   }
+}
+async function handleGoogle() {
+
+  try {
+
+    const provider = new GoogleAuthProvider();
+
+    await signInWithPopup(auth, provider);
+
+    navigate("/");
+
+  } catch {
+
+    setErro("Erro ao entrar com Google.");
+  }
+}
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center px-4 py-12">
