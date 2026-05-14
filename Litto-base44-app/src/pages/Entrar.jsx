@@ -1,13 +1,17 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/lib/AuthContext";
+import { motion } from "framer-motion";
+
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup
 } from "firebase/auth";
+
+import { auth } from "@/lib/firebase";
+
+import AuthInput from "../components/auth/AuthInput";
+import MaterialIcon from "../components/ui/MaterialIcon";
 
 export default function Entrar() {
   const navigate = useNavigate();
@@ -64,95 +68,124 @@ async function handleGoogle() {
 
     const provider = new GoogleAuthProvider();
 
+    provider.setCustomParameters({
+        prompt: "select_account",
+    });
+
     await signInWithPopup(auth, provider);
 
     navigate("/");
 
-  } catch {
+  } catch (error) {
 
-    setErro("Erro ao entrar com Google.");
+    console.error(error);
+
+    setErro(error.message);
   }
 }
 
-  return (
-    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        {/* Logo / Título */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <h1 className="text-4xl font-black tracking-tighter text-white">
-              litto<span className="text-[#f5a623]">.</span>
-            </h1>
-          </Link>
-          <p className="mt-2 text-sm text-gray-400">Bem-vindo de volta ao seu universo literário</p>
+return (
+  <div className="min-h-screen bg-background flex items-center justify-center px-4 py-20">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 100 }}
+      className="w-full max-w-md"
+    >
+
+      {/* Header */}
+      <div className="text-center mb-8">
+        <Link to="/" className="inline-block mb-6">
+          <div className="bg-primary px-6 py-2 border-2 border-foreground shadow-brutal rounded-sm">
+            <span className="text-white font-poppins font-black text-2xl italic">
+              Litto
+            </span>
+          </div>
+        </Link>
+
+        <h1 className="font-poppins font-black text-3xl text-foreground">
+          Entrar
+        </h1>
+
+        <p className="font-poppins text-sm text-muted-foreground mt-2">
+          Bem-vindo de volta ao Litto.
+        </p>
+      </div>
+
+      {/* Card */}
+      <div className="bg-card border-4 border-foreground shadow-brutal rounded-sm overflow-hidden">
+
+        {/* Top bar */}
+        <div className="bg-primary px-6 py-3 border-b-2 border-foreground flex items-center gap-2">
+          <MaterialIcon
+            name="login"
+            size={18}
+            className="text-white"
+          />
+
+          <span className="font-poppins font-bold text-xs uppercase text-white">
+            Acessar conta
+          </span>
         </div>
 
-        {/* Card */}
-        <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-8 shadow-xl">
-          <h2 className="text-xl font-bold text-white mb-6">Entrar na conta</h2>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+
+          <AuthInput
+            label="E-mail"
+            name="email"
+            type="email"
+            placeholder="seu@email.com"
+            value={form.email}
+            onChange={handleChange}
+            icon="mail"
+          />
+
+          <AuthInput
+            label="Senha"
+            name="senha"
+            type="password"
+            placeholder="Sua senha"
+            value={form.senha}
+            onChange={handleChange}
+            icon="lock"
+          />
 
           {erro && (
-            <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-              {erro}
+            <div className="flex items-center gap-2 px-3 py-2 bg-destructive/10 border-2 border-destructive rounded-sm">
+              <MaterialIcon
+                name="error"
+                size={16}
+                className="text-destructive"
+              />
+
+              <span className="font-poppins text-xs font-medium text-destructive">
+                {erro}
+              </span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">E-mail</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="seu@email.com"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#f5a623]/60 focus:ring-1 focus:ring-[#f5a623]/30 transition"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-gray-300">Senha</label>
-                <Link
-                  to="/recuperar-senha"
-                  className="text-xs text-[#f5a623] hover:underline"
-                >
-                  Esqueceu a senha?
-                </Link>
-              </div>
-              <input
-                type="password"
-                name="senha"
-                value={form.senha}
-                onChange={handleChange}
-                placeholder="Sua senha"
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#f5a623]/60 focus:ring-1 focus:ring-[#f5a623]/30 transition"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={carregando}
-              className="w-full bg-[#f5a623] hover:bg-[#e09516] text-black font-bold py-3 rounded-xl text-sm transition disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-            >
-              {carregando ? "Entrando..." : "Entrar"}
-            </button>
-          </form>
-
-          {/* Divisor */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs text-gray-500">ou continue com</span>
-            <div className="flex-1 h-px bg-white/10" />
-          </div>
+          <button
+            type="submit"
+            disabled={carregando}
+            className="brutal-btn w-full py-3.5 bg-primary text-white font-poppins font-bold text-sm uppercase border-2 border-foreground shadow-brutal rounded-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {carregando ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <MaterialIcon name="login" size={18} />
+                Entrar
+              </>
+            )}
+          </button>
 
           {/* Google */}
           <button
+            type="button"
             onClick={handleGoogle}
             disabled={carregando}
-            className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3 rounded-xl text-sm transition disabled:opacity-50"
+            className="brutal-btn w-full py-3.5 bg-card text-foreground font-poppins font-bold text-sm uppercase border-2 border-foreground shadow-brutal rounded-sm flex items-center justify-center gap-3"
           >
             <svg width="18" height="18" viewBox="0 0 48 48">
               <path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/>
@@ -160,17 +193,26 @@ async function handleGoogle() {
               <path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.6 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7l-6.6 5C9.7 39.7 16.3 44 24 44z"/>
               <path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.5-2.6 4.6-4.8 6l6.2 5.2C40.7 35.7 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/>
             </svg>
+
             Continuar com Google
           </button>
+        </form>
 
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Não tem uma conta?{" "}
-            <Link to="/cadastro" className="text-[#f5a623] hover:underline font-medium">
-              Criar conta
-            </Link>
-          </p>
+        {/* Footer */}
+        <div className="px-6 py-4 border-t-2 border-foreground bg-muted text-center">
+          <span className="font-poppins text-sm text-muted-foreground">
+            Não tem conta?
+          </span>{" "}
+
+          <Link
+            to="/cadastro"
+            className="font-poppins text-sm font-bold text-primary underline underline-offset-2 hover:text-primary/80"
+          >
+            Criar conta
+          </Link>
         </div>
       </div>
-    </div>
-  );
+    </motion.div>
+  </div>
+);
 }

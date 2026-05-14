@@ -6,6 +6,8 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 
 import AppLayout from './components/layout/AppLayout';
+import Cadastro from "./pages/Cadastro";
+import Entrar from "./pages/Entrar";
 import Home from './pages/Home';
 import Explorar from './pages/Explorar';
 import Bibliotecas from './pages/Bibliotecas';
@@ -42,6 +44,8 @@ const AuthenticatedApp = () => {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/explorar" element={<Explorar />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/login" element={<Entrar />} />
         <Route path="/bibliotecas" element={<Bibliotecas />} />
         <Route path="/comunidade" element={<Comunidade />} />
         <Route path="/perfil" element={<Perfil />} />
