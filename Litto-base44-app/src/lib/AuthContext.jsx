@@ -1,42 +1,71 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { auth } from "./firebase";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+export function AuthProvider({ children }) {
+  const [usuario, setUsuario] = useState(null);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setIsAuthenticated(!!currentUser);
-      setIsLoadingAuth(false);
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setUsuario(user);
+      setCarregando(false);
     });
-
-    return () => unsubscribe();
+    return unsub;
   }, []);
 
-  const logout = async () => {
-    await signOut(auth);
-  };
+  // Cadastro com e-mail + senha + nome
+  async function cadastrar(email, senha, nome) {
+    const credencial = await createUserWithEmailAndPassword(auth, email, senha);
+    if (nome) {
+      await updateProfile(credencial.user, { displayName: nome });
+    }
+    return credencial;
+  }
+
+  // Login com e-mail + senha
+  function entrar(email, senha) {
+    return signInWithEmailAndPassword(auth, email, senha);
+  }
+
+  // Login com Google
+  function entrarComGoogle() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider);
+  }
+
+  // Sair
+  function sair() {
+    return signOut(auth);
+  }
+
+  // Recuperar senha
+  function recuperarSenha(email) {
+    return sendPasswordResetEmail(auth, email);
+  }
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        isLoadingAuth,
-        logout
-      }}
+      value={{ usuario, carregando, cadastrar, entrar, entrarComGoogle, sair, recuperarSenha }}
     >
-      {children}
+      {!carregando && children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth deve ser usado dentro de <AuthProvider>");
+  return ctx;
+}
