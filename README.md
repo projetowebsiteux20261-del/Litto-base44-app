@@ -138,6 +138,6 @@ Essa versãoa da plataforma foi criada pelo Base44 e migrado para o Github Codes
 │       └── index.ts
 ├── tailwind.config.js
 ├── vercel.json
-└── vite.config.js```
+└── vite.config.js
 
 ---
