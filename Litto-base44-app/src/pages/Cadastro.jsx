@@ -1,13 +1,14 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "@/lib/AuthContext";
+
 import AuthInput from "../components/auth/AuthInput";
 import MaterialIcon from "../components/ui/MaterialIcon";
 
 export default function Cadastro() {
   const navigate = useNavigate();
+  const { cadastrar } = useAuth();
   const [form, setForm] = useState({ nome: "", email: "", senha: "", confirmarSenha: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,7 +17,7 @@ export default function Cadastro() {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
   };
-  
+
   const handleSubmit = async (e) => {
   e.preventDefault();
   setError("");
@@ -39,10 +40,10 @@ export default function Cadastro() {
   try {
     setLoading(true);
 
-    await createUserWithEmailAndPassword(
-      auth,
-      form.email,
-      form.senha
+    await cadastrar(
+        form.email,
+        form.senha,
+        form.nome
     );
 
     navigate("/");

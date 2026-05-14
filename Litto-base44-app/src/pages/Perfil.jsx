@@ -3,30 +3,36 @@ import { motion } from "framer-motion";
 import BrutalCard from "../components/ui/BrutalCard";
 import BrutalButton from "../components/ui/BrutalButton";
 import MaterialIcon from "../components/ui/MaterialIcon";
-
-const stats = [
-  { label: "Livros Lidos", value: 47, icon: "menu_book" },
-  { label: "Avaliações", value: 12, icon: "rate_review" },
-  { label: "Recomendações", value: 8, icon: "recommend" },
-  { label: "Quero Ler", value: 23, icon: "bookmark" },
-];
-
-const shelf = {
-  lidos: [
-    { icon: "auto_stories", title: "Fundação e Império", author: "Isaac Asimov" },
-    { icon: "memory", title: "Neuromancer", author: "William Gibson" },
-    { icon: "menu_book", title: "O Fim da Infância", author: "Arthur C. Clarke" },
-    { icon: "psychology", title: "1984", author: "George Orwell" },
-  ],
-  queroLer: [
-    { icon: "rocket_launch", title: "Duna Messias", author: "Frank Herbert" },
-    { icon: "castle", title: "O Silmarillion", author: "J.R.R. Tolkien" },
-    { icon: "local_fire_department", title: "It - A Coisa", author: "Stephen King" },
-  ],
-};
+import { useAuth } from "@/lib/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Perfil() {
+
+  const { sair } = useAuth();
+  const navigate = useNavigate();
+
   const [tab, setTab] = useState("lidos");
+
+  const stats = [
+    { label: "Livros Lidos", value: 47, icon: "menu_book" },
+    { label: "Avaliações", value: 12, icon: "rate_review" },
+    { label: "Recomendações", value: 8, icon: "recommend" },
+    { label: "Quero Ler", value: 23, icon: "bookmark" },
+  ];
+
+  const shelf = {
+    lidos: [
+      { icon: "auto_stories", title: "Fundação e Império", author: "Isaac Asimov" },
+      { icon: "memory", title: "Neuromancer", author: "William Gibson" },
+      { icon: "menu_book", title: "O Fim da Infância", author: "Arthur C. Clarke" },
+      { icon: "psychology", title: "1984", author: "George Orwell" },
+    ],
+    queroLer: [
+      { icon: "rocket_launch", title: "Duna Messias", author: "Frank Herbert" },
+      { icon: "castle", title: "O Silmarillion", author: "J.R.R. Tolkien" },
+      { icon: "local_fire_department", title: "It - A Coisa", author: "Stephen King" },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -100,7 +106,13 @@ export default function Perfil() {
 
           {/* Logout */}
           <div className="mt-8">
-            <BrutalButton variant="outline">
+            <BrutalButton
+              variant="outline"
+              onClick={async () => {
+                await sair();
+                navigate("/");
+              }}
+            >
               <MaterialIcon name="logout" size={16} />
               Sair
             </BrutalButton>

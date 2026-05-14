@@ -16,17 +16,11 @@ export default function FeaturedBookSection({ heroImage }) {
             viewport={{ once: true }}
             transition={{ type: "spring", stiffness: 100 }}
           >
-            <div className="border-4 border-foreground shadow-brutal rounded-sm overflow-hidden bg-card">
-              <div className="flex items-center gap-2 px-4 py-2 border-b-2 border-foreground bg-secondary">
-                <MaterialIcon name="auto_stories" size={18} />
-                <span className="font-poppins font-bold text-xs uppercase text-foreground">
-                  Destaque
-                </span>
-              </div>
-              <img
-                src={heroImage}
-                alt="Imagem de livros em destaque"
-                className="w-full aspect-[4/3] object-cover"
+            <div className="w-full aspect-[4/3] bg-primary flex items-center justify-center border-4 border-foreground">
+              <MaterialIcon
+                name="menu_book"
+                size={96}
+                className="text-white"
               />
             </div>
           </motion.div>
