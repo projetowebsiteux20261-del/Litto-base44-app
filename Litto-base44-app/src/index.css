@@ -134,3 +134,16 @@
   background: #1a1b24;
   border-radius: 0.125rem;
 }
+html,
+body,
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+* {
+  outline: 1px solid red;
+}

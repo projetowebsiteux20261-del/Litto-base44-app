@@ -18,10 +18,10 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card border-b-4 border-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 items-center h-16">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <div className="bg-primary px-4 py-1.5 border-2 border-foreground shadow-brutal-sm brutal-btn">
+            <div className="bg-primary px-3 py-1.5 md:px-4 border-2 border-foreground shadow-[3px_3px_0px_#000] md:shadow-brutal-sm brutal-btn">
               <span className="text-white font-poppins font-black text-xl tracking-tight">
                 Litto
               </span>
@@ -113,7 +113,15 @@ export default function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden brutal-btn p-2 border-2 border-foreground shadow-brutal-sm bg-card rounded-sm"
+            className="md:hidden
+              flex items-center justify-center
+              w-10 h-10
+              border-2 border-foreground
+              bg-card
+              shadow-brutal-sm
+              rounded-sm
+              shrink-0
+              "
           >
             {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -123,7 +131,7 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden border-t-2 border-foreground bg-card">
-          <div className="px-4 py-4 space-y-2">
+          <div className="px-4 py-5 space-y-3">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (

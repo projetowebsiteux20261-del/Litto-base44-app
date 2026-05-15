@@ -62,23 +62,53 @@ export default function Footer() {
         </div>
 
         {/* Newsletter */}
-        <div className="mt-12 pt-8 border-t-2 border-foreground">
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <p className="font-poppins font-bold text-sm">
-              Receba novidades literárias na sua caixa de entrada.
-            </p>
-            <div className="flex w-full sm:w-auto">
-              <input
-                type="email"
-                placeholder="seu@email.com"
-                className="flex-1 sm:w-64 px-4 py-3 border-2 border-foreground border-r-0 bg-card font-poppins text-sm rounded-l-sm focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-              <button className="brutal-btn px-6 py-3 bg-primary text-primary-foreground font-poppins font-bold text-sm uppercase border-2 border-foreground shadow-brutal-sm rounded-r-sm">
-                Assinar
-              </button>
-            </div>
-          </div>
-        </div>
+        <div
+  className="
+    flex items-center
+    w-full sm:w-auto
+    border-2 border-foreground
+    bg-card
+    shadow-brutal-sm
+    overflow-hidden
+  "
+>
+  <input
+    type="email"
+    placeholder="seu@email.com"
+    className="
+      flex-1
+      min-w-0
+      sm:w-64
+      px-4
+      py-3
+      bg-transparent
+      font-poppins
+      text-sm
+      focus:outline-none
+      placeholder:text-muted-foreground
+    "
+  />
+
+  <button
+    className="
+      px-4
+      self-stretch
+      bg-primary
+      text-primary-foreground
+      border-l-2 border-foreground
+      font-poppins
+      font-bold
+      text-sm
+      uppercase
+      flex items-center justify-center
+      shrink-0
+      transition-all
+      hover:brightness-95
+    "
+  >
+    Assinar
+  </button>
+</div>
 
         {/* Copyright */}
         <div className="mt-8 pt-4 border-t-2 border-foreground/20 text-center">

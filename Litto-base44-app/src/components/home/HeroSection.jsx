@@ -35,27 +35,59 @@ export default function HeroSection() {
             Descubra sua próxima história favorita.
           </motion.h2>
 
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="w-full max-w-xl"
-          >
-            <div className="flex border-4 border-foreground shadow-brutal bg-card rounded-sm overflow-hidden">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Qual história você quer viver hoje?"
-                className="flex-1 px-4 py-4 font-poppins text-sm bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground"
-              />
-              <button className="brutal-btn px-6 py-4 bg-primary text-white font-poppins font-bold text-sm uppercase flex items-center gap-2 border-l-4 border-foreground">
-                <MaterialIcon name="search" size={20} />
-                <span className="hidden sm:inline">Explorar</span>
-              </button>
-            </div>
-          </motion.div>
+{/* Search Bar */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.3 }}
+  className="w-full max-w-xl"
+>
+  <div
+    className="
+      flex items-center
+      w-full
+      border-4 border-foreground
+      bg-card
+      shadow-brutal-sm
+      overflow-hidden
+    "
+  >
+    <input
+      type="text"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Qual história você quer viver hoje?"
+      className="
+        flex-1
+        min-w-0
+        px-4
+        py-4
+        bg-transparent
+        text-foreground
+        font-poppins
+        text-sm
+        placeholder:text-muted-foreground
+        focus:outline-none
+      "
+    />
+
+    <button
+      className="
+        w-14
+        self-stretch
+        bg-primary
+        text-white
+        border-l-4 border-foreground
+        flex items-center justify-center
+        shrink-0
+        transition-all
+        hover:brightness-95
+      "
+    >
+      <MaterialIcon name="search" size={20} />
+    </button>
+  </div>
+</motion.div>
 
           {/* Tagline */}
           <motion.p
