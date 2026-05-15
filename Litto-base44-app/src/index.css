@@ -134,3 +134,17 @@
   background: #1a1b24;
   border-radius: 0.125rem;
 }
+html,
+body,
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* 
+DEBUG RESPONSIVIDADE um outline vermelho pra saber o que está fora do lugar
+
+* {
+  outline: 1px solid red;
+}
+*/
