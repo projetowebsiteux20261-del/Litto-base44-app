@@ -141,9 +141,7 @@ body,
   overflow-x: hidden;
 }
 
-* {
-  box-sizing: border-box;
-}
+/* DEBUG RESPONSIVIDADE um outline vermelho pra saber o que está fora do lugar
 * {
   outline: 1px solid red;
 }
